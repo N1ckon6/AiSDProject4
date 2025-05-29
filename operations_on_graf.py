@@ -14,12 +14,11 @@ class GraphGenerator:
         if u not in self.graph[v]:
             self.graph[v].append(u)
     
-    def generate_hamiltonian_graph(self, num_nodes, saturation):
+    def generate_hamiltonian_graph(self, num_nodes, saturation, notham):
         self.num_nodes = num_nodes
         self.saturation = saturation
         self.mode = "hamilton"
-        
-        if num_nodes <= 10:
+        if notham == False and num_nodes <= 10:
             print("Error: Number of nodes must be greater than 10 for Hamiltonian graph.")
             return
         
@@ -59,7 +58,7 @@ class GraphGenerator:
         self.mode = "non-hamilton"
         
         # Create a Hamiltonian graph
-        self.generate_hamiltonian_graph(num_nodes, 50)
+        self.generate_hamiltonian_graph(num_nodes, 50, True)
         
         # Isolate one node to make it non-hamiltonian
         if num_nodes > 1:
@@ -119,3 +118,63 @@ class GraphGenerator:
         
         cycle.reverse()
         return cycle
+    
+    def _hamiltonian_cycle_util(self, current_vertex, path, visited, start_node):
+        visited[current_vertex] = True
+        path.append(current_vertex)
+
+        # Base case: If all vertices are included in the path
+        if len(path) == self.num_nodes:
+            # Check if there is an edge from the last added vertex to the start_node
+            if start_node in self.graph.get(current_vertex, []):
+                path.append(start_node) # Complete the cycle
+                return True
+            else:
+                # Backtrack: cannot close the cycle
+                path.pop() # Remove current_vertex
+                visited[current_vertex] = False
+                return False
+
+        for neighbor in sorted(self.graph.get(current_vertex, [])):
+            # neighbor must be in visited keys if graph nodes are 1..num_nodes
+            if not visited[neighbor]: 
+                if self._hamiltonian_cycle_util(neighbor, path, visited, start_node):
+                    return True # Cycle found, propagate success
+
+        path.pop() # Remove current_vertex from path
+        visited[current_vertex] = False
+        return False
+
+    def find_hamiltonian_cycle(self):
+        if not self.graph:
+            print("Graph is empty. Cannot find Hamiltonian cycle.")
+            return None
+        
+        if self.num_nodes == 0:
+            print("Number of nodes (self.num_nodes) is 0. Cannot determine cycle parameters.")
+            return None
+        
+        if self.num_nodes < 1:
+             print(f"Number of nodes {self.num_nodes} is too small for a cycle search.")
+             return None
+
+        path = []  # This list will store the Hamiltonian cycle if found
+        visited = {i: False for i in range(1, self.num_nodes + 1)}
+        start_node = -1
+        if 1 in visited and 1 in self.graph: 
+            start_node = 1
+        else:
+            valid_nodes_in_graph_keys = [n for n in sorted(self.graph.keys()) if n in visited]
+            if valid_nodes_in_graph_keys:
+                start_node = valid_nodes_in_graph_keys[0]
+            else:
+                print("No valid starting node found in the graph for Hamiltonian cycle search (e.g., graph empty or nodes outside expected range).")
+                return None
+        
+        # Call the recursive helper. It modifies 'path'.
+        if self._hamiltonian_cycle_util(start_node, path, visited, start_node):
+            return path
+        else:
+            print(f"No Hamiltonian cycle found in the graph (search started from node {start_node}).")
+            return None
+    
