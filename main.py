@@ -51,20 +51,24 @@ def main():
             except ValueError:
                 print("Error: Please enter a valid integer for nodes. Please try again.")
     
+    # Prof's Review: Menu in separate menu.py file
     # Interactive menu for operations
     while True:
         print("\nGraph Operations Menu:")
-        print("1. Print graph")
-        print("2. Find Eulerian cycle")
-        print("3. Find Hamilton cycle")
-        print("4. Export to Tikz")
-        print("5. Exit")
+        print("Print – print graph")
+        print("FindE – find Eulerian cycle")
+        print("FindH – find Hamilton cycle")
+        print("Tikz – export to Tikz")
+        print("Exit")
         
-        choice = input("Enter your choice (1-5): ")
+        # Prof's Review: Using string names would be more user friendly 
+        choice = input("Enter your choice: ").lower()
         match(choice):
-            case '1':
+            case 'print':
                  generator.print_graph()
-            case '2':
+            case 'finde':
+                # Prof's Review: For cases 2 - 5: preferably menu should call higher level functions, without doing any logic related to the task by itself.
+
                 cycle = generator.find_eulerian_cycle()
                 if cycle:
                     print("\nEulerian cycle found:")
@@ -74,7 +78,7 @@ def main():
                         print("Valid cycle (starts and ends at the same vertex)")
                     else:
                         print("Note: The path doesn't form a complete cycle")
-            case '3':
+            case 'findh':
                 cycle = generator.find_hamiltonian_cycle()
                 if cycle:
                     print("\nHamiltonian cycle found:")
@@ -84,15 +88,15 @@ def main():
                          print(f"Valid Hamiltonian cycle traversing {generator.num_nodes} unique vertices.")
                     else:
                          print("Warning: The returned path claiming to be a Hamiltonian cycle has inconsistencies.")
-            case '4':
+            case 'tikz':
                 tikz_code = generator.export_to_tikz()
                 with open("graph.tikz", "w") as f:
                     f.write(tikz_code)
                 print("Graph exported to graph.tikz")
-            case '5':
+            case 'exit':
                 break
             case _:
-                print("Invalid choice. Please enter 1, 2, or 3.")
+                print("Invalid choice. Please enter print, finde, findh, tikz or exit")
 
 if __name__ == "__main__":
     main()

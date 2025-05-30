@@ -1,0 +1,6 @@
+\begin{tikzpicture}[scale=1.5, every node/.style={circle, draw, fill=white, minimum size=8pt, inner sep=0pt}]
+    \draw (3.0,0.0) -- (-1.5,2.6);
+    \node at (3.0,0.0) (1) {1};
+    \node at (-1.5,2.6) (2) {2};
+    \node at (-1.5,-2.6) (3) {3};
+\end{tikzpicture}
