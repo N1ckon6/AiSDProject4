@@ -1,3 +1,4 @@
+import math
 import random
 from collections import defaultdict
 
@@ -178,3 +179,43 @@ class GraphGenerator:
             print(f"No Hamiltonian cycle found in the graph (search started from node {start_node}).")
             return None
     
+    def export_to_tikz(self, filename=None):
+        """Export the graph to TikZ code for LaTeX.
+        
+        Args:
+            filename (str, optional): If provided, saves the TikZ code to a file.
+                                      Otherwise, returns it as a string.
+        """
+        # Node positioning - arrange nodes in a circle for better visualization
+        angle_step = 360 / self.num_nodes
+        node_positions = {}
+        for i in range(1, self.num_nodes + 1):
+            angle = (i-1) * angle_step
+            x = round(3 * math.cos(math.radians(angle)), 2)
+            y = round(3 * math.sin(math.radians(angle)), 2)
+            node_positions[i] = (x, y)
+        
+        tikz_code = "\\begin{tikzpicture}[scale=1.5, every node/.style={circle, draw, fill=white, minimum size=8pt, inner sep=0pt}]\n"
+        
+        # Draw edges first (so nodes appear on top)
+        drawn_edges = set()  # To avoid duplicate edges in undirected graph
+        for u in sorted(self.graph.keys()):
+            for v in sorted(self.graph[u]):
+                if (u, v) not in drawn_edges and (v, u) not in drawn_edges:
+                    x1, y1 = node_positions[u]
+                    x2, y2 = node_positions[v]
+                    tikz_code += f"    \\draw ({x1},{y1}) -- ({x2},{y2});\n"
+                    drawn_edges.add((u, v))
+        
+        # Draw nodes
+        for node, (x, y) in node_positions.items():
+            tikz_code += f"    \\node at ({x},{y}) ({node}) {{{node}}};\n"
+    
+        tikz_code += "\\end{tikzpicture}"
+        
+        if filename:
+            with open(filename, 'w') as f:
+                f.write(tikz_code)
+            print(f"TikZ code saved to {filename}")
+        else:
+            return tikz_code

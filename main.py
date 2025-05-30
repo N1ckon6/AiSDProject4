@@ -57,9 +57,10 @@ def main():
         print("1. Print graph")
         print("2. Find Eulerian cycle")
         print("3. Find Hamilton cycle")
-        print("4. Exit")
+        print("4. Export to Tikz")
+        print("5. Exit")
         
-        choice = input("Enter your choice (1-4): ")
+        choice = input("Enter your choice (1-5): ")
         match(choice):
             case '1':
                  generator.print_graph()
@@ -84,6 +85,11 @@ def main():
                     else:
                          print("Warning: The returned path claiming to be a Hamiltonian cycle has inconsistencies.")
             case '4':
+                tikz_code = generator.export_to_tikz()
+                with open("graph.tikz", "w") as f:
+                    f.write(tikz_code)
+                print("Graph exported to graph.tikz")
+            case '5':
                 break
             case _:
                 print("Invalid choice. Please enter 1, 2, or 3.")
