@@ -1,1 +1,5 @@
 __pycache__/
+benchmark_euler_on_hamiltonian.csv
+benchmark_hamilton_on_hamiltonian.csv
+benchmark_hamilton_on_non_hamiltonian.csv
+graph.tikz
